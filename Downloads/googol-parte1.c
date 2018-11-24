@@ -263,11 +263,24 @@ int subtrai(int short a[], int tamA, int short b[], int tamB){
 }
 
 int multiplica(int short a[], int tamA, int short b[], int tamB){
-    int i,j=0,k=0;
+    int i,j=0,k=0,negativo=0;
     short int vAux[MAX_TAM];
     short int n[MAX_TAM];
     int tamVa,tamN=0,res=0,resto=0;
     zeraVetor(n);
+    
+    if(a[tamA-1]<0 && b[tamB-1]<0){ /*os if's encadeados a seguir resolve os casos*/
+        a[tamA-1]=-a[tamA-1];       /*nos quais pelo menos um dos operandos é negativo*/
+        b[tamB-1]=-b[tamB-1];
+    }
+    else if(a[tamA-1]<0){
+        a[tamA-1]=-a[tamA-1];
+        negativo=1;
+    }
+    else if(b[tamB-1]<0){
+        b[tamB-1]=-b[tamB-1];
+        negativo=1;
+    }
 
     if((a[0]==0 && tamA==1) || (b[0]==0 && tamB==1)){
         zeraVetor(a);   /*Casos a*0 ou 0*b*/
@@ -282,7 +295,7 @@ int multiplica(int short a[], int tamA, int short b[], int tamB){
     }
     zeraVetor(vAux);
     tamVa=1;
-
+    
     for(j=0;j<tamB;j++){
         tamN=0;
         for(i=0;i<tamA;i++){
@@ -300,6 +313,8 @@ int multiplica(int short a[], int tamA, int short b[], int tamB){
         zeraVetor(n);
         k++;
     }
+    if(negativo)
+        vAux[tamVa-1] = -vAux[tamVa-1];
 
     copia(a,vAux,tamVa);
     return tamVa;
