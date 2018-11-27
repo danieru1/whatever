@@ -40,6 +40,9 @@ int divide(int short a[], int tamA, int short b[], int tamB);
 /*Copia o vetor b para o vetor a*/
 int copia(int short a[], int short b[], int tamB);
 
+void inverte(int short a[], int tamA);
+
+int maior(int short a[], int tamA, int short b[],int tamB); 
 int main() {
     char str [MAX_TAM];
     int short a [MAX_TAM];
@@ -66,7 +69,8 @@ int main() {
             tamR = subtrai(a,tamA,b,tamB);
         if(operacao == '*')
             tamR = multiplica(a,tamA,b,tamB);
-        
+        if(operacao == '/')
+            tamR = divide(a,tamA,b,tamB);
         imprime(a,tamR);
         
         zeraVetor(a);
@@ -319,7 +323,44 @@ int multiplica(int short a[], int tamA, int short b[], int tamB){
     copia(a,vAux,tamVa);
     return tamVa;
 }
+int divide(int short a[], int tamA, int short b[], int tamB){
+    int resto=0,i,j=0,k=0,w=0,tam,tamAux,digito=0,flag;
+    int short res[MAX_TAM];
+    int short aux[MAX_TAM];
+    int short dividendo[MAX_TAM];
+    zeraVetor(res);
+    tamAux = copia(aux,b,tamB);
+    
 
+    for(i=tamA-1;i-tamB+1>-1;i--){
+        for(j=0;j<tamB;j++){ /*Chuta o primeiro 'pedaço' a ser dividido e coloca no dividendo*/
+            dividendo[tamB-1-j]=a[i-j];
+        }
+        tam=tamB;
+        if((maior(b,tamB,dividendo,tam)) ==1){ /*Caso esse pedaço seja menor que o divisor*/
+            inverte(dividendo,tam);       /*pega mais um digito*/
+            dividendo[j]=a[i-j];
+            tam++;
+            inverte(dividendo,tam);
+        }
+        /*Verifica quantas vezes o divisor 'cabe' dentro do pedaço do dividendo.
+          Basicamente acha um digito da divisão.*/
+        for(j=1;j<10;j++){
+            if((flag = (maior(aux,tamAux,dividendo,tam))) !=0){ 
+                if(flag==1)
+                    digito=j-1;
+                if (flag==-1)
+                    digito=j;
+                break;                                        
+                }
+            tamAux =soma(aux,tamAux,b,tamB);
+        }
+        res[k] = digito;
+        k++;
+    }
+    copia(a,res,k);
+    return k;
+}
 int copia(int short a[], int short b[], int tamB){
     int i;
     for(i=0;i<MAX_TAM;i++)
@@ -333,9 +374,31 @@ void zeraVetor(int short num[]){
         num[i] = 0;
 }
 
+/*retorna 1 caso 'a' for maior que 'b' e 0 caso contrário*/
+int maior(int short a[], int tamA, int short b[],int tamB) {
+    int i;
+    if(tamA>tamB)
+        return 1;
+    if(tamB>tamA)
+        return 0;
 
+    for(i=tamA-1;i>-1;i--){
+        if(a[i]>b[i])
+            return 1;
+        if(a[i]<b[i])
+            return 0;
+    }
+return -1;
+}
 
+void inverte(int short a[], int tamA){
+    int i;
+    int short aux[tamA];
 
+    for(i=0;i<tamA;i++)
+        aux[i] = a[tamA-i-1];
+    copia(a,aux,tamA);
+}
 
 
 
