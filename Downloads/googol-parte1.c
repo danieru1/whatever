@@ -324,25 +324,46 @@ int multiplica(int short a[], int tamA, int short b[], int tamB){
     return tamVa;
 }
 int divide(int short a[], int tamA, int short b[], int tamB){
-    int resto=0,i,j=0,k=0,w=0,tam,tamAux,digito=0,flag;
+    int resto=0,i,j=0,k=0,w=0,tam,tamAux,digito=0,flag,ordem=0,tamO;
     int short res[MAX_TAM];
     int short aux[MAX_TAM];
     int short dividendo[MAX_TAM];
+    int short produto[MAX_TAM];
+    int short aux2[MAX_TAM];
     zeraVetor(res);
-    tamAux = copia(aux,b,tamB);
     
+    if(a[tamA-1]==0) /*Casos 0/b*/
+        return 1;
+    if(maior(b,tamB,a,tamA)==1){ /*Casos b>a (a/b=0)*/
+        zeraVetor(a);
+        return 1;
+    }
+    if(maior(b,tamB,a,tamA) == -1){ /*Casos a=b*/
+        zeraVetor(a);
+        a[0]=1;
+        return 1;
+    }
 
-    for(i=tamA-1;i-tamB+1>-1;i--){
+    while(maior(a,tamA,b,tamB)){
+        i=tamA-1;
+        tamAux = copia(aux,b,tamB);
+       
         for(j=0;j<tamB;j++){ /*Chuta o primeiro 'pedaço' a ser dividido e coloca no dividendo*/
             dividendo[tamB-1-j]=a[i-j];
         }
+        ordem = i-j+1;
         tam=tamB;
+        
         if((maior(b,tamB,dividendo,tam)) ==1){ /*Caso esse pedaço seja menor que o divisor*/
             inverte(dividendo,tam);       /*pega mais um digito*/
             dividendo[j]=a[i-j];
             tam++;
             inverte(dividendo,tam);
+            ordem--;
         }
+        printf("geral=\n");
+        imprime(a,tamA);
+        imprime(dividendo,tam);
         /*Verifica quantas vezes o divisor 'cabe' dentro do pedaço do dividendo.
           Basicamente acha um digito da divisão.*/
         for(j=1;j<10;j++){
@@ -355,9 +376,25 @@ int divide(int short a[], int tamA, int short b[], int tamB){
                 }
             tamAux =soma(aux,tamAux,b,tamB);
         }
+        /*Subtrai o resultado parcial do divendo parcial*/
+        tamAux = copia(aux,b,tamB);
+        criaNumeroInt(digito,produto);
+        tamAux = multiplica(aux,tamAux,produto,1);
+        subtrai(dividendo,tam,aux,tamAux);
+
+        /*Atualiza o 'a' com o novo valor a ser dividido para conseguir o prox digito*/
+        tamO = criaNumeroInt(10,produto);
+        copia(aux2,produto,tamO);
+        for(w=0;w<ordem-1;w++)
+            tamO = multiplica(produto,tamO,aux2,2);
+        tamAux = multiplica(aux,tamAux,produto,tamO);
+        tamA = subtrai(a,tamA,aux,tamAux);
+        /*Coloca o digito resultante no vetor resultado*/
+        printf("digito = %d\n",digito);
         res[k] = digito;
         k++;
     }
+    inverte(res,k);
     copia(a,res,k);
     return k;
 }
@@ -377,6 +414,10 @@ void zeraVetor(int short num[]){
 /*retorna 1 caso 'a' for maior que 'b' e 0 caso contrário*/
 int maior(int short a[], int tamA, int short b[],int tamB) {
     int i;
+    if(a[tamA-1] <0 && b[tamB-1] >0)
+        return 0;
+    if(a[tamA-1] >0 && b[tamB-1] <0)
+        return 0;
     if(tamA>tamB)
         return 1;
     if(tamB>tamA)
